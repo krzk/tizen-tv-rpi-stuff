@@ -4,4 +4,4 @@ Raspberry Pi 2.
 
 The guide is available here:
 
-https://wiki.tizen.org/wiki/How_to_use_Mesa_with_GL/Running_Tizen_TV_on_Raspberry_Pi_2
+https://wiki.tizen.org/wiki/How_to_use_Mesa_with_GL/EGL_GPU_acceleration_and_DRM_for_Tizen_3.0_TV_profile_%28wayland_backend%29_on_RPI2

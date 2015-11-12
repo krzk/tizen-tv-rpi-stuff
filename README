@@ -1,0 +1,7 @@
+RPI STUFF is a collecion of patches for enlightenment, drm, mesa and efl. This
+patches are needed as dirty hack to improve the support the Tizen OS on a
+Raspberry Pi 2.
+
+The guide is available here:
+
+https://wiki.tizen.org/wiki/How_to_use_Mesa_with_GL/Running_Tizen_TV_on_Raspberry_Pi_2

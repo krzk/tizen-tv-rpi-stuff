@@ -1,0 +1,74 @@
+diff --git a/include/EGL/eglplatform.h b/include/EGL/eglplatform.h
+index 7802542..8396a6e 100644
+--- a/include/EGL/eglplatform.h
++++ b/include/EGL/eglplatform.h
+@@ -107,23 +107,10 @@ typedef void*                           EGLNativeDisplayType;
+ 
+ #elif defined(__unix__)
+ 
+-#if defined(MESA_EGL_NO_X11_HEADERS)
+-
+ typedef void            *EGLNativeDisplayType;
+ typedef khronos_uintptr_t EGLNativePixmapType;
+ typedef khronos_uintptr_t EGLNativeWindowType;
+ 
+-#else
+-
+-/* X11 (tentative)  */
+-#include <X11/Xlib.h>
+-#include <X11/Xutil.h>
+-
+-typedef Display *EGLNativeDisplayType;
+-typedef Pixmap   EGLNativePixmapType;
+-typedef Window   EGLNativeWindowType;
+-
+-#endif /* MESA_EGL_NO_X11_HEADERS */
+ 
+ #elif __HAIKU__
+ #include <kernel/image.h>
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
+index 3391afc..bf6becb 100644
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
+@@ -60,6 +60,7 @@ lock_front_buffer(struct gbm_surface *_surf)
+       dri2_surf->current = NULL;
+    }
+ 
++//   printf("MESA:EGL ==> lock_front_buffer: bo(%p), current(%d)\n", bo, dri2_surf->buffer_count - 1);
+    return bo;
+ }
+ 
+@@ -215,12 +216,19 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+    int i;
+ 
+    if (dri2_surf->back == NULL) {
+-      for (i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
++      if (dri2_surf->buffer_count < 0 || dri2_surf->buffer_count > 3) dri2_surf->buffer_count = 0;
++      i = dri2_surf->buffer_count;
++      do {
+ 	 if (!dri2_surf->color_buffers[i].locked) {
+ 	    dri2_surf->back = &dri2_surf->color_buffers[i];
++            i++;
++            if (i == 4) dri2_surf->buffer_count = 0;
++            else dri2_surf->buffer_count = i;
+ 	    break;
+ 	 }
+-      }
++         i++;
++         if (i == 4) i = 0;
++      } while (i != dri2_surf->buffer_count );
+    }
+ 
+    if (dri2_surf->back == NULL)
+diff --git a/src/gallium/drivers/vc4/Makefile.am b/src/gallium/drivers/vc4/Makefile.am
+index 3f62ce2..719a902 100644
+--- a/src/gallium/drivers/vc4/Makefile.am
++++ b/src/gallium/drivers/vc4/Makefile.am
+@@ -30,6 +30,7 @@ SIM_LDFLAGS = -lsimpenrose
+ endif
+ 
+ AM_CFLAGS = \
++	-I$(top_builddir)/src/glsl/nir \
+ 	$(LIBDRM_CFLAGS) \
+ 	$(GALLIUM_DRIVER_CFLAGS) \
+ 	$(SIM_CFLAGS) \

@@ -1,0 +1,125 @@
+diff --git a/packaging/enlightenment.spec b/packaging/enlightenment.spec
+index e64f930..a58f887 100644
+--- a/packaging/enlightenment.spec
++++ b/packaging/enlightenment.spec
+@@ -17,21 +17,6 @@ BuildRequires:  gettext
+ BuildRequires:  pam-devel
+ BuildRequires:  pkgconfig(alsa)
+ BuildRequires:  pkgconfig(dbus-1)
+-BuildRequires:  pkgconfig(ecore)
+-BuildRequires:  pkgconfig(ecore-con)
+-BuildRequires:  pkgconfig(ecore-evas)
+-BuildRequires:  pkgconfig(ecore-file)
+-BuildRequires:  pkgconfig(ecore-input)
+-BuildRequires:  pkgconfig(ecore-input-evas)
+-BuildRequires:  pkgconfig(ecore-ipc)
+-BuildRequires:  pkgconfig(edbus)
+-BuildRequires:  pkgconfig(edje)
+-BuildRequires:  pkgconfig(eet)
+-BuildRequires:  pkgconfig(eeze)
+-BuildRequires:  pkgconfig(efreet)
+-BuildRequires:  pkgconfig(eina)
+-BuildRequires:  pkgconfig(eio)
+-BuildRequires:  pkgconfig(evas)
+ BuildRequires:  pkgconfig(elementary)
+ BuildRequires:  pkgconfig(ice)
+ BuildRequires:  pkgconfig(libudev)
+@@ -54,6 +39,98 @@ Requires:       libwayland-extension-server
+ %endif
+ 
+ 
++BuildRequires:  byacc
++BuildRequires:  bison
++BuildRequires:  flex
++BuildRequires:  autoconf >= 2.64, automake >= 1.11
++BuildRequires:  expat-devel
++BuildRequires:  libjpeg-devel
++BuildRequires:  libtool >= 2.2
++BuildRequires:  libvpx-devel
++BuildRequires:  pam-devel
++BuildRequires:  pkgconfig
++BuildRequires:  xz
++BuildRequires:  pkgconfig(cairo)
++BuildRequires:  pkgconfig(cairo-egl) >= 1.11.3
++BuildRequires:  pkgconfig(egl) >= 7.10
++BuildRequires:  pkgconfig(gbm)
++BuildRequires:  pkgconfig(gio-2.0)
++BuildRequires:  pkgconfig(glesv2)
++BuildRequires:  pkgconfig(glib-2.0)
++BuildRequires:  pkgconfig(gobject-2.0)
++BuildRequires:  pkgconfig(libdrm) >= 2.4.30
++BuildRequires:  pkgconfig(libffi)
++BuildRequires:  pkgconfig(libinput) >= 0.8.0
++BuildRequires:  pkgconfig(libsystemd-login)
++BuildRequires:  pkgconfig(libudev) >= 136
++BuildRequires:  pkgconfig(mtdev) >= 1.1.0
++BuildRequires:  pkgconfig(pangocairo)
++BuildRequires:  pkgconfig(pixman-1)
++BuildRequires:  pkgconfig(poppler-glib)
++BuildRequires:  pkgconfig(wayland-client)
++BuildRequires:  pkgconfig(wayland-egl)
++BuildRequires:  pkgconfig(wayland-server)
++BuildRequires:  pkgconfig(xkbcommon) >= 0.3.0
++
++BuildRequires:  pkgconfig(check)
++BuildRequires:  pkgconfig(libinput)
++BuildRequires:  zlib-devel
++BuildRequires:  gettext-tools
++BuildRequires:  pkgconfig(gles20)
++BuildRequires:  pkgconfig(wayland-client)
++BuildRequires:  pkgconfig(wayland-cursor)
++BuildRequires:  pkgconfig(wayland-egl)
++BuildRequires:  glib2-devel
++BuildRequires:  pkgconfig(bullet)
++BuildRequires:  pkgconfig(openssl)
++BuildRequires:  gnutls-devel
++BuildRequires:  curl-devel
++BuildRequires:  pkgconfig(vconf)
++BuildRequires:  pkgconfig(xkbcommon)
++BuildRequires:  systemd-devel
++BuildRequires:  pkgconfig(ibus-1.0)
++#eldbus
++BuildRequires:  dbus-devel
++
++#edje
++BuildRequires:  pkgconfig(lua)
++BuildRequires:  pkgconfig(sndfile)
++BuildRequires:  pkgconfig(libpulse)
++
++#emotion
++BuildRequires:  pkgconfig(gstreamer-1.0)
++BuildRequires:  pkgconfig(gstreamer-plugins-base-1.0)
++
++#evas
++BuildRequires:  libexif-devel
++BuildRequires:  giflib-devel
++BuildRequires:  libtiff-devel
++BuildRequires:  pkgconfig(libpng)
++BuildRequires:  libjpeg-turbo-devel
++BuildRequires:  pkgconfig(pixman-1)
++BuildRequires:  pkgconfig(freetype2)
++BuildRequires:  pkgconfig(fribidi)
++BuildRequires:  pkgconfig(fontconfig)
++BuildRequires:  pkgconfig(harfbuzz)
++BuildRequires:  pkgconfig(libtbm)
++
++#eeze
++BuildRequires:  libudev-devel
++BuildRequires:  libmount-devel
++BuildRequires:  pkgconfig(dlog)
++
++#ecore_buffer
++BuildRequires:  pkgconfig(libtbm)
++BuildRequires:  pkgconfig(libdrm)
++BuildRequires:  pkgconfig(wayland-client)
++BuildRequires:  pkgconfig(wayland-server)
++
++BuildRequires:  pkgconfig(pthread-stubs)
++BuildRequires:  pkgconfig(pciaccess)
++BuildRequires:  llvm-devel
++
++
++
+ %description
+ Enlightenment is a window manager.
+ 

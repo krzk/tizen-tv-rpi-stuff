@@ -1,0 +1,103 @@
+diff --git a/src/lib/ecore_drm/ecore_drm_output.c b/src/lib/ecore_drm/ecore_drm_output.c
+index 18cad43..5fe8ef9 100644
+--- a/src/lib/ecore_drm/ecore_drm_output.c
++++ b/src/lib/ecore_drm/ecore_drm_output.c
+@@ -111,6 +111,7 @@ _ecore_drm_output_crtc_find(Ecore_Drm_Device *dev, drmModeRes *res, drmModeConne
+              if ((p & (1 << i)) &&
+                  (!(dev->crtc_allocator & (1 << res->crtcs[i]))))
+                {
++                  conn->encoder_id = conn->encoders[j]; 
+                   return i;
+                }
+           }
+diff --git a/src/lib/eina/eina_module.c b/src/lib/eina/eina_module.c
+index fbdeeeb..01de306 100644
+--- a/src/lib/eina/eina_module.c
++++ b/src/lib/eina/eina_module.c
+@@ -95,7 +95,7 @@ struct _Eina_Module
+ 
+    Eina_Bool global;
+ 
+-   const char file[1];
++   char *file;
+ };
+ 
+ typedef struct _Dir_List_Get_Cb_Data
+@@ -272,13 +272,15 @@ EAPI Eina_Module *eina_module_new(const char *file)
+    len = strlen(file);
+    EINA_SAFETY_ON_FALSE_RETURN_VAL(len > 0, NULL);
+ 
+-   m = malloc(sizeof(Eina_Module) + len + 1);
++   //m = malloc(sizeof(Eina_Module) + len + 1);
++   m = malloc(sizeof(Eina_Module));
+    if (!m)
+      {
+         ERR("could not malloc(%lu)",
+             (unsigned long)(sizeof(Eina_Module) + len + 1));
+         return NULL;
+      }
++   m->file = malloc(len + 1);
+ 
+    memcpy((char *)m->file, file, len + 1);
+    m->ref = 0;
+@@ -294,6 +296,7 @@ EAPI Eina_Bool eina_module_free(Eina_Module *m)
+    EINA_SAFETY_ON_NULL_RETURN_VAL(m, EINA_FALSE);
+ 
+    DBG("m=%p, handle=%p, file=%s, refs=%d", m, m->handle, m->file, m->ref);
++   if (m->file) free(m->file);
+ 
+    if (m->handle)
+       if (eina_module_unload(m) == EINA_FALSE)
+@@ -325,7 +328,7 @@ EAPI Eina_Bool eina_module_load(Eina_Module *m)
+ 
+    if (!dl_handle)
+      {
+-        WRN("could not dlopen(\"%s\", %s): %s", m->file, dlerror(), 
++        printf("could not dlopen(\"%s\", %s): %s", m->file, dlerror(), 
+             (flag == RTLD_NOW) ? "RTLD_NOW" : "RTLD_LAZY");
+         return EINA_FALSE;
+      }
+diff --git a/src/modules/evas/engines/gl_drm/evas_drm_main.c b/src/modules/evas/engines/gl_drm/evas_drm_main.c
+index fe75b6d..564f5fc 100644
+--- a/src/modules/evas/engines/gl_drm/evas_drm_main.c
++++ b/src/modules/evas/engines/gl_drm/evas_drm_main.c
+@@ -17,13 +17,18 @@ static void
+ _outbuf_buffer_swap(Outbuf *ob, Eina_Rectangle *rects EINA_UNUSED, unsigned int count EINA_UNUSED)
+ {
+    Buffer *buff;
++   struct gbm_bo *tempBo;
+ 
+    buff = &(ob->priv.buffer[ob->priv.curr]);
+ 
++   tempBo = buff->bo;
+    buff->bo = gbm_surface_lock_front_buffer(ob->surface);
+ 
+    /* if this buffer is not valid, we need to set it */
+    if (!buff->valid) evas_drm_outbuf_framebuffer_set(ob, buff);
++   else if (tempBo != buff->bo)
++      ERR("BO different: Outbuf.Buffer[%d].bo(%p),  gbm.bo(%p)", ob->priv.curr, tempBo, buff->bo);
++
+ 
+    /* send this buffer to the crtc */
+    evas_drm_framebuffer_send(ob, buff);
+@@ -91,6 +96,8 @@ eng_window_new(Evas_Engine_Info_GL_Drm *info, Evas *e, struct gbm_device *gbm, s
+    //gw->vsync = info->vsync;
+ 
+    gw->priv.num = NUM_BUFFERS;
++   gw->priv.pending_flip = EINA_FALSE;
++
+    /* check for buffer override */
+    // TODO: change for gbm_bo related drm buffer number.
+    if ((num = getenv("EVAS_GL_DRM_BUFFERS")))
+@@ -655,7 +662,10 @@ eng_outbuf_flush(Outbuf *ob, Tilebuf_Rect *rects EINA_UNUSED, Evas_Render_Mode r
+      }
+    else
+ #endif
+-      eglSwapBuffers(ob->egl_disp, ob->egl_surface[0]);
++   if(ob->priv.pending_flip != EINA_FALSE) goto end;
++
++   eglSwapBuffers(ob->egl_disp, ob->egl_surface[0]);
++
+ 
+    if (ob->info->callback.post_swap)
+      ob->info->callback.post_swap(ob->info->callback.data, ob->evas);
